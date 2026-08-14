@@ -18,6 +18,8 @@ async function main() {
     .version(packageJson.version)
     .description(packageJson.description);
 
+  program.parse();
+
   intro(chalk.blueBright("Resume Analyzer 🤖\n"));
 }
 
