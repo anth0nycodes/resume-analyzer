@@ -1,0 +1,41 @@
+{
+  "name": "resume-analyzer",
+  "version": "0.0.0",
+  "description": "An AI-powered CLI for analyzing resumes against job descriptions.",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "check": "tsc --noEmit",
+    "prepublishOnly": "pnpm build",
+    "publish:npm": "pnpm publish --access public"
+  },
+  "main": "dist/index.js",
+  "bin": {
+    "analyze-resume": "dist/index.js"
+  },
+  "keywords": [
+    "ai",
+    "resume",
+    "resume-analyzer",
+    "job-search",
+    "cli",
+    "agent",
+    "llm"
+  ],
+  "license": "MIT",
+  "author": "anth0nycodes",
+  "packageManager": "pnpm@10.28.2+sha512.41872f037ad22f7348e3b1debbaf7e867cfd448f2726d9cf74c08f19507c31d2c8e7a11525b983febc2df640b5438dee6023ebb1f84ed43cc2d654d2bc326264",
+  "dependencies": {
+    "@clack/prompts": "^1.7.0",
+    "axios": "^1.19.0",
+    "chalk": "^6.0.0",
+    "commander": "^15.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
+  }
+}
