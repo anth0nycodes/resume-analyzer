@@ -45,12 +45,12 @@ async function main() {
       if (!selectedFilePath)
         throw new Error("No file selected — did you cancel the dialog?");
       filePath = selectedFilePath;
+      console.log(chalk.green(`Using: ${filePath}`));
     } catch (error) {
       const errorMessage = getErrorMessage(error);
       console.error(chalk.red(`Error selecting file: ${errorMessage}`));
       process.exit(1);
     }
-    console.log(chalk.green(`Using: ${filePath}`));
   } else if (fileSource === "scanFolders") {
     const desktopDir = join(homedir(), "Desktop");
     const downloadsDir = join(homedir(), "Downloads");
