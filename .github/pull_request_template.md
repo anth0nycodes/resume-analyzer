@@ -9,6 +9,7 @@
 ## Checklist
 
 - [ ] `pnpm check` passes
-- [ ] `pnpm build` succeeds
+- [ ] Tested locally with `pnpm dev`
+- [ ] Tested built version with `pnpm build && pnpm start`
 - [ ] Commits follow Conventional Commits
 - [ ] PR description explains the change
