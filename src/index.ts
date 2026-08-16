@@ -2,8 +2,14 @@ import { program } from "commander";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { getDeviceFiles, getErrorMessage, getFilePathByOS } from "./helpers.js";
+import {
+  getDeviceFiles,
+  getEditorInfo,
+  getErrorMessage,
+  getFilePathByOS,
+} from "./helpers.js";
 import { autocomplete, cancel, intro, isCancel, select } from "@clack/prompts";
+import { editor } from "@inquirer/prompts";
 import chalk from "chalk";
 import { homedir } from "node:os";
 import { toMarkdown } from "@firecrawl/anydoc";
@@ -88,9 +94,29 @@ async function main() {
     process.exit(1);
   }
 
-  const markdownContent = await toMarkdown(filePath);
-  console.log(chalk.blueBright("\nConverted Markdown Content:\n"));
-  console.log(markdownContent);
+  const resumeMarkdown = await toMarkdown(filePath);
+  let jobDescriptionText: string | null = null;
+
+  try {
+    const { name: editorName, saveHint } = getEditorInfo();
+    console.log(
+      chalk.dim(
+        `\nOpening ${chalk.cyan(editorName)}. Paste the job description, then ${saveHint}.`,
+      ),
+    );
+    const jobDescription = await editor({
+      message: "Paste the job description (opens your editor):",
+      validate: (value) =>
+        value.trim() !== "" || "Job description cannot be empty.",
+    });
+    jobDescriptionText = jobDescription.trim();
+    console.log(chalk.blueBright("\nJob Description:\n"));
+    console.log(chalk.white(jobDescriptionText));
+  } catch (error) {
+    const errorMessage = getErrorMessage(error);
+    console.error(chalk.red(`Error getting job description: ${errorMessage}`));
+    process.exit(1);
+  }
 }
 
 try {
