@@ -6,6 +6,7 @@ import { getDeviceFiles, getErrorMessage, getFilePathByOS } from "./helpers.js";
 import { autocomplete, cancel, intro, isCancel, select } from "@clack/prompts";
 import chalk from "chalk";
 import { homedir } from "node:os";
+import { toMarkdown } from "@firecrawl/anydoc";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -81,6 +82,15 @@ async function main() {
       process.exit(1);
     }
   }
+
+  if (!filePath) {
+    console.error(chalk.red("No file path selected. Exiting…"));
+    process.exit(1);
+  }
+
+  const markdownContent = await toMarkdown(filePath);
+  console.log(chalk.blueBright("\nConverted Markdown Content:\n"));
+  console.log(markdownContent);
 }
 
 try {
