@@ -108,7 +108,7 @@ export async function getConfig() {
     const content = await readFile(CONFIG_FILE, "utf8");
     return JSON.parse(content);
   } catch {
-    // config doesn't exist yey, return empty config
+    // config doesn't exist yet, return empty config
     return {};
   }
 }
