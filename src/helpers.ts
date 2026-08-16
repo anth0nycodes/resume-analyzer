@@ -10,6 +10,27 @@ export function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
 }
 
+export function getEditorInfo() {
+  const fallback = process.platform === "win32" ? "notepad" : "vi";
+  const command = process.env.VISUAL || process.env.EDITOR || fallback;
+  const name = command.split(/[\\/]/).pop()?.toLowerCase() ?? command;
+
+  const saveHints: Record<string, string> = {
+    vi: "press Esc, then type :wq and Enter",
+    vim: "press Esc, then type :wq and Enter",
+    nvim: "press Esc, then type :wq and Enter",
+    nano: "press Ctrl+O, Enter to save, then Ctrl+X to exit",
+    pico: "press Ctrl+O, Enter to save, then Ctrl+X to exit",
+    emacs: "press Ctrl+X then Ctrl+S to save, then Ctrl+X then Ctrl+C to exit",
+    notepad: "save with Ctrl+S, then close the window",
+    "notepad.exe": "save with Ctrl+S, then close the window",
+    code: "save with Ctrl+S, then close the tab (or window)",
+  };
+
+  const saveHint = saveHints[name] ?? "save and close the editor to continue";
+  return { name, saveHint };
+}
+
 export async function getFilePathByOS() {
   if (process.platform === "darwin") {
     const { stdout } = await execFileAsync("osascript", [
