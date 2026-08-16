@@ -5,24 +5,14 @@ import { fileURLToPath } from "node:url";
 import { getErrorMessage } from "./helpers.js";
 import chalk from "chalk";
 import { analyzeResume } from "./commands/analyze.js";
+import { printProjectInfo } from "./messages/projectInfo.js";
+import { config } from "./commands/config.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const packageJson = JSON.parse(
   readFileSync(join(__dirname, "../package.json"), "utf8"),
 );
-
-function printProjectInfo() {
-  console.log(chalk.bold.blueBright(`\n${packageJson.name} 🤖`));
-  console.log(chalk.gray(`${packageJson.description}\n`));
-  console.log(`${chalk.bold("Author:")}    ${chalk.cyan(packageJson.author)}`);
-  console.log(
-    `${chalk.bold("License:")}   ${chalk.magenta(packageJson.license)}`,
-  );
-  console.log(
-    `${chalk.bold("Supports:")}  ${chalk.yellow("PDF")}, ${chalk.yellow("DOCX")}\n`,
-  );
-}
 
 async function main() {
   program
@@ -37,12 +27,21 @@ async function main() {
     )
     .action(async () => await analyzeResume());
 
+  program
+    .command("config")
+    .description("Manage your Resume Analyzer configuration")
+    .option("--aki, --api-key-info", "show how to obtain an API key")
+    .option("--sak, --set-api-key <api-key>", "set your API key")
+    .option("--sc, --show-config", "displays your current config")
+    .option("--rc, --reset-config", "resets your current config")
+    .action(config);
+
   if (process.argv.slice(2).length === 0) {
-    printProjectInfo();
+    printProjectInfo(packageJson);
     return;
   }
 
-  await program.parseAsync();
+  program.parseAsync();
 }
 
 try {

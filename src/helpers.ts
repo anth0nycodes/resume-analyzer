@@ -1,8 +1,10 @@
-import { readdir } from "node:fs/promises";
+import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { extname, join } from "node:path";
-import { FileOption } from "./types.js";
+import { Config, FileOption } from "./types.js";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { homedir } from "node:os";
+import constants from "node:constants";
 
 const execFileAsync = promisify(execFile);
 
@@ -76,4 +78,37 @@ export async function getDeviceFiles(...dirs: string[]) {
     fileOptions.push(...dirFileOptions);
   }
   return fileOptions;
+}
+
+export const CONFIG_DIR = join(homedir(), ".resume-analyzer");
+export const CONFIG_FILE = join(CONFIG_DIR, "config.json");
+
+export async function fileExists(filePath: string) {
+  try {
+    await access(filePath, constants.F_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function setConfig(config: Config) {
+  await mkdir(CONFIG_DIR, { recursive: true });
+  const existingConfig = await getConfig();
+
+  // If config has any keys, merge with existing; otherwise use config as-is (for reset)
+  const updatedConfig =
+    Object.keys(config).length > 0 ? { ...existingConfig, ...config } : config;
+
+  await writeFile(CONFIG_FILE, JSON.stringify(updatedConfig, null, 2), "utf8");
+}
+
+export async function getConfig() {
+  try {
+    const content = await readFile(CONFIG_FILE, "utf8");
+    return JSON.parse(content);
+  } catch {
+    // config doesn't exist yet, return empty config
+    return {};
+  }
 }

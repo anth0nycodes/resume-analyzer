@@ -13,7 +13,7 @@
   },
   "main": "dist/index.js",
   "bin": {
-    "analyze-resume": "dist/index.js"
+    "resume-analyzer": "dist/index.js"
   },
   "keywords": [
     "ai",
