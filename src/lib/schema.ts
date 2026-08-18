@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const resumeAnalysisSchema = z.object({
+export const ResumeAnalysisSchema = z.object({
   results: z.object({
     strengths: z
       .array(z.string().max(240))

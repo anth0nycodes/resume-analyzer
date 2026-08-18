@@ -1,6 +1,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { spinner } from "@clack/prompts";
 import { generateText, Output } from "ai";
+import { z } from "zod";
 import {
   CONFIG_DIR,
   fileExists,
@@ -8,7 +9,7 @@ import {
   getHistory,
   HISTORY_FILE,
 } from "../helpers.js";
-import { resumeAnalysisSchema } from "./schema.js";
+import { ResumeAnalysisSchema } from "./schema.js";
 import { mkdir, writeFile } from "node:fs/promises";
 
 export async function generateResumeAnalysis(
@@ -65,14 +66,14 @@ ${jobDescription}`;
     const { text } = await generateText({
       model: openai("gpt-5.4-mini"),
       output: Output.object({
-        schema: resumeAnalysisSchema,
+        schema: ResumeAnalysisSchema,
       }),
       system: SYSTEM_PROMPT,
       prompt,
     });
     loader.stop("Analysis complete");
 
-    const parsedOutput = JSON.parse(text);
+    const parsedOutput: z.infer<typeof ResumeAnalysisSchema> = JSON.parse(text);
     const historyRunId =
       history.runs.length > 0
         ? history.runs[history.runs.length - 1].id + 1
@@ -84,7 +85,7 @@ ${jobDescription}`;
       JSON.stringify({ runs: history.runs }, null, 2),
       "utf8",
     );
-    return parsedOutput;
+    return historyRun;
   } catch (error) {
     loader.stop("Analysis failed");
     // Rethrow so the caller owns error logging + exit (avoids duplicate messages).

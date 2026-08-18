@@ -25,14 +25,14 @@ export interface Config {
 }
 
 // History
-export type HistoryResult = {
+type HistoryResult = {
   strengths: string[];
   suggestions: string[];
   gaps: string[];
   missingKeywords: string[];
 };
 
-export type HistoryRun = {
+type HistoryRun = {
   id: number;
   results: HistoryResult;
 };

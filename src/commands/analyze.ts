@@ -109,7 +109,7 @@ export async function analyzeResume() {
       jobDescriptionText,
     );
     console.log(chalk.blueBright("\nResume Analysis Result:\n"));
-    console.log(resumeAnalysisResult);
+    // TODO: add chalk.table output here
   } catch (error) {
     fail("Error generating resume analysis", error);
   }
