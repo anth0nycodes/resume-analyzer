@@ -1,23 +1,33 @@
 import { createOpenAI } from "@ai-sdk/openai";
+import { spinner } from "@clack/prompts";
 import { generateText, Output } from "ai";
-import { CONFIG_DIR, getConfig, getErrorMessage } from "../helpers.js";
+import {
+  CONFIG_DIR,
+  fileExists,
+  getConfig,
+  getHistory,
+  HISTORY_FILE,
+} from "../helpers.js";
 import { resumeAnalysisSchema } from "./schema.js";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
-
-const HISTORY_FILE = join(CONFIG_DIR, "history.json");
+import { mkdir, writeFile } from "node:fs/promises";
 
 export async function generateResumeAnalysis(
   resumeMarkdown: string,
   jobDescription: string,
 ) {
-  const SYSTEM_PROMPT = `You are an expert technical recruiter and resume reviewer.
-Analyze the resume against the job description and return structured feedback.
+  const SYSTEM_PROMPT = `You are a senior hiring manager and technical recruiter reviewing a resume against a specific job description.
+
+Mindset:
+- Recruiters scan a resume in ~6-10 seconds using an F-pattern: top of the page, left edge, then a quick sweep. Judge whether the most relevant, quantified wins are where that scan lands.
+- Reward evidence, not adjectives. A strength counts only if backed by a concrete project, metric, or named tool.
+- Coach bullets toward XYZ format: "Accomplished X, measured by Y, by doing Z." When suggesting an edit, quote the weak wording, then give the tightened version.
 
 Rules:
-- Judge only against the provided job description. Do not invent requirements.
-- Be specific and evidence-based; quote resume/JD wording where useful.
-- Each item is one concise, standalone point. Return an empty array if none apply.`;
+- Judge ONLY against the provided job description. Never invent requirements the JD does not state.
+- Every point must be relevant to THIS role. Drop generic advice and generic praise.
+- Keywords must be real skills/tools/technologies from the JD that are genuinely relevant to the role and absent from the resume — no soft-skill filler, nothing unrelated.
+- Be specific and evidence-based; quote resume/JD wording when it sharpens the point.
+- Keep each item to one short, standalone sentence. Respect the field limits — fewer, sharper points beat long lists. Return an empty array if none apply.`;
 
   const prompt = `Resume:
 ${resumeMarkdown}
@@ -25,8 +35,18 @@ ${resumeMarkdown}
 Job Description:
 ${jobDescription}`;
 
+  const loader = spinner();
   try {
-    await mkdir(CONFIG_DIR, { recursive: true });
+    if (!(await fileExists(HISTORY_FILE))) {
+      await mkdir(CONFIG_DIR, { recursive: true });
+      await writeFile(
+        HISTORY_FILE,
+        JSON.stringify({ runs: [] }, null, 2),
+        "utf8",
+      );
+    }
+
+    const history = await getHistory();
     const config = await getConfig();
     const apiKey = config.apiKey;
 
@@ -41,6 +61,7 @@ ${jobDescription}`;
       apiKey: apiKey,
     });
 
+    loader.start("Analyzing your resume against the job description...");
     const { text } = await generateText({
       model: openai("gpt-5.4-mini"),
       output: Output.object({
@@ -49,19 +70,24 @@ ${jobDescription}`;
       system: SYSTEM_PROMPT,
       prompt,
     });
+    loader.stop("Analysis complete");
 
     const parsedOutput = JSON.parse(text);
-
-    // save run to history
+    const historyRunId =
+      history.runs.length > 0
+        ? history.runs[history.runs.length - 1].id + 1
+        : 1;
+    const historyRun = { id: historyRunId, ...parsedOutput };
+    history.runs.push(historyRun);
     await writeFile(
       HISTORY_FILE,
-      JSON.stringify(parsedOutput, null, 2),
+      JSON.stringify({ runs: history.runs }, null, 2),
       "utf8",
     );
     return parsedOutput;
   } catch (error) {
-    const errorMessage = getErrorMessage(error);
-    console.error("Error generating resume analysis:", errorMessage);
-    process.exit(1);
+    loader.stop("Analysis failed");
+    // Rethrow so the caller owns error logging + exit (avoids duplicate messages).
+    throw error;
   }
 }

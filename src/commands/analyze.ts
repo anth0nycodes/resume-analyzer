@@ -1,7 +1,7 @@
 import {
+  fail,
   getDeviceFiles,
   getEditorInfo,
-  getErrorMessage,
   getFilePathByOS,
   isSupportedFile,
 } from "../helpers.js";
@@ -45,9 +45,7 @@ export async function analyzeResume() {
       filePath = selectedFilePath;
       console.log(chalk.green(`Using: ${filePath}`));
     } catch (error) {
-      const errorMessage = getErrorMessage(error);
-      console.error(chalk.red(`Error selecting file: ${errorMessage}`));
-      process.exit(1);
+      fail("Error selecting file via nativeDialog", error);
     }
   } else if (fileSource === "scanFolders") {
     const desktopDir = join(homedir(), "Desktop");
@@ -74,9 +72,7 @@ export async function analyzeResume() {
       filePath = String(selectedFilePath);
       console.log(chalk.green(`Using: ${filePath}`));
     } catch (error) {
-      const errorMessage = getErrorMessage(error);
-      console.error(chalk.red(`Error selecting file: ${errorMessage}`));
-      process.exit(1);
+      fail("Error selecting file via scanFolders", error);
     }
   }
 
@@ -85,7 +81,7 @@ export async function analyzeResume() {
     process.exit(1);
   }
 
-  const resumeMarkdown = await toMarkdown(filePath);
+  let resumeMarkdown: string | null = null;
   let jobDescriptionText: string | null = null;
 
   try {
@@ -95,16 +91,16 @@ export async function analyzeResume() {
         `\nOpening ${chalk.cyan(editorName)}. Paste the job description, then ${saveHint}.`,
       ),
     );
+
     const jobDescription = await editor({
       message: "Paste the job description (opens your editor):",
       validate: (value) =>
         value.trim() !== "" || "Job description cannot be empty.",
     });
     jobDescriptionText = jobDescription.trim();
+    resumeMarkdown = await toMarkdown(filePath);
   } catch (error) {
-    const errorMessage = getErrorMessage(error);
-    console.error(chalk.red(`Error getting job description: ${errorMessage}`));
-    process.exit(1);
+    fail("Error preparing resume and job description", error);
   }
 
   try {
@@ -115,10 +111,6 @@ export async function analyzeResume() {
     console.log(chalk.blueBright("\nResume Analysis Result:\n"));
     console.log(resumeAnalysisResult);
   } catch (error) {
-    const errorMessage = getErrorMessage(error);
-    console.error(
-      chalk.red(`Error generating resume analysis: ${errorMessage}`),
-    );
-    process.exit(1);
+    fail("Error generating resume analysis", error);
   }
 }

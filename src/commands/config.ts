@@ -3,9 +3,9 @@ import { printApiKeyInfo } from "../messages/apiKeyInfo.js";
 import { ConfigOptions } from "../types.js";
 import {
   CONFIG_FILE,
+  fail,
   fileExists,
   getConfig,
-  getErrorMessage,
   setConfig,
 } from "../helpers.js";
 import chalk from "chalk";
@@ -23,9 +23,7 @@ export async function config(options: ConfigOptions, command: Command) {
       console.log(`${chalk.green("API key set successfully!")}`);
       process.exit();
     } catch (error) {
-      const errorMessage = getErrorMessage(error);
-      console.error("Error setting API key:", errorMessage);
-      process.exit(1);
+      fail("Error setting API key", error);
     }
   }
 
@@ -49,9 +47,7 @@ export async function config(options: ConfigOptions, command: Command) {
       console.log(`${chalk.yellow("Your current config:\n")}${configString}`);
       process.exit();
     } catch (error) {
-      const errorMessage = getErrorMessage(error);
-      console.error("Error reading config:", errorMessage);
-      process.exit(1);
+      fail("Error reading config", error);
     }
   }
 
@@ -68,9 +64,7 @@ export async function config(options: ConfigOptions, command: Command) {
       console.log(`${chalk.green("Config reset successfully!")}`);
       process.exit();
     } catch (error) {
-      const errorMessage = getErrorMessage(error);
-      console.error("Error resetting config:", errorMessage);
-      process.exit(1);
+      fail("Error resetting config", error);
     }
   }
 

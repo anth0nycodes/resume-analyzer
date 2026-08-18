@@ -1,33 +1,33 @@
 import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, extname, join } from "node:path";
-import { Config, FileOption } from "./types.js";
+import { Config, FileOption, History } from "./types.js";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { homedir } from "node:os";
 import constants from "node:constants";
 import { SUPPORTED_FILE_TYPES } from "./constants.js";
 import { fileURLToPath } from "node:url";
+import chalk from "chalk";
 
 const execFileAsync = promisify(execFile);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export async function getPackageJson() {
-  try {
-    const packageJsonContent = await readFile(
-      join(__dirname, "../package.json"),
-      "utf8",
-    );
-    return JSON.parse(packageJsonContent);
-  } catch (error) {
-    const errorMessage = getErrorMessage(error);
-    console.error("Error reading package.json:", errorMessage);
-    process.exit(1);
-  }
+  const packageJsonContent = await readFile(
+    join(__dirname, "../package.json"),
+    "utf8",
+  );
+  return JSON.parse(packageJsonContent);
 }
 
-export function getErrorMessage(error: unknown) {
+function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
+}
+
+export function fail(context: string, error: unknown): never {
+  console.error(chalk.red(`${context}: ${getErrorMessage(error)}`));
+  process.exit(1);
 }
 
 export function getEditorInfo() {
@@ -127,5 +127,16 @@ export async function getConfig(): Promise<Config> {
   } catch {
     // config doesn't exist yet, return empty config
     return {};
+  }
+}
+
+export const HISTORY_FILE = join(CONFIG_DIR, "history.json");
+
+export async function getHistory(): Promise<History> {
+  try {
+    const historyJson = await readFile(HISTORY_FILE, "utf8");
+    return JSON.parse(historyJson);
+  } catch (error) {
+    fail("Error reading history file", error);
   }
 }

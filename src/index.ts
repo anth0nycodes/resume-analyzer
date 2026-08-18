@@ -1,5 +1,5 @@
 import { program } from "commander";
-import { getErrorMessage, getPackageJson } from "./helpers.js";
+import { fail, getPackageJson } from "./helpers.js";
 import chalk from "chalk";
 import { analyzeResume } from "./commands/analyze.js";
 import { printProjectInfo } from "./messages/projectInfo.js";
@@ -40,7 +40,5 @@ async function main() {
 try {
   await main();
 } catch (error) {
-  const errorMessage = getErrorMessage(error);
-  console.error("Error occured in main:", errorMessage);
-  process.exit(1);
+  fail("Error occurred in main", error);
 }
