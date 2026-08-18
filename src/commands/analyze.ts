@@ -3,6 +3,7 @@ import {
   getEditorInfo,
   getErrorMessage,
   getFilePathByOS,
+  isSupportedFile,
 } from "../helpers.js";
 import { autocomplete, cancel, intro, isCancel, select } from "@clack/prompts";
 import { editor } from "@inquirer/prompts";
@@ -10,6 +11,7 @@ import { homedir } from "node:os";
 import { toMarkdown } from "@firecrawl/anydoc";
 import chalk from "chalk";
 import { join } from "node:path";
+import { generateResumeAnalysis } from "../lib/generateResumeAnalysis.js";
 
 export async function analyzeResume() {
   intro(chalk.blueBright("Resume Analyzer 🤖\n"));
@@ -35,6 +37,11 @@ export async function analyzeResume() {
       const selectedFilePath = await getFilePathByOS();
       if (!selectedFilePath)
         throw new Error("No file selected — did you cancel the dialog?");
+      if (!isSupportedFile(selectedFilePath)) {
+        throw new Error(
+          "Only PDF and DOCX files are supported. Please select a valid file.",
+        );
+      }
       filePath = selectedFilePath;
       console.log(chalk.green(`Using: ${filePath}`));
     } catch (error) {
@@ -94,11 +101,24 @@ export async function analyzeResume() {
         value.trim() !== "" || "Job description cannot be empty.",
     });
     jobDescriptionText = jobDescription.trim();
-    console.log(chalk.blueBright("\nJob Description:\n"));
-    console.log(chalk.white(jobDescriptionText));
   } catch (error) {
     const errorMessage = getErrorMessage(error);
     console.error(chalk.red(`Error getting job description: ${errorMessage}`));
+    process.exit(1);
+  }
+
+  try {
+    const resumeAnalysisResult = await generateResumeAnalysis(
+      resumeMarkdown,
+      jobDescriptionText,
+    );
+    console.log(chalk.blueBright("\nResume Analysis Result:\n"));
+    console.log(resumeAnalysisResult);
+  } catch (error) {
+    const errorMessage = getErrorMessage(error);
+    console.error(
+      chalk.red(`Error generating resume analysis: ${errorMessage}`),
+    );
     process.exit(1);
   }
 }

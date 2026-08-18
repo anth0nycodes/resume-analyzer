@@ -1,18 +1,11 @@
 import { program } from "commander";
-import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { getErrorMessage } from "./helpers.js";
+import { getErrorMessage, getPackageJson } from "./helpers.js";
 import chalk from "chalk";
 import { analyzeResume } from "./commands/analyze.js";
 import { printProjectInfo } from "./messages/projectInfo.js";
 import { config } from "./commands/config.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const packageJson = JSON.parse(
-  readFileSync(join(__dirname, "../package.json"), "utf8"),
-);
+const packageJson = await getPackageJson();
 
 async function main() {
   program
