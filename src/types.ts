@@ -23,3 +23,20 @@ export interface ConfigOptions {
 export interface Config {
   apiKey?: string;
 }
+
+// History
+type HistoryResult = {
+  strengths: string[];
+  suggestions: string[];
+  gaps: string[];
+  missingKeywords: string[];
+};
+
+type HistoryRun = {
+  id: number;
+  results: HistoryResult;
+};
+
+export interface History {
+  runs: HistoryRun[];
+}

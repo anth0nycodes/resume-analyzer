@@ -1,15 +1,33 @@
 import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
-import { extname, join } from "node:path";
-import { Config, FileOption } from "./types.js";
+import { dirname, extname, join } from "node:path";
+import { Config, FileOption, History } from "./types.js";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { homedir } from "node:os";
 import constants from "node:constants";
+import { SUPPORTED_FILE_TYPES } from "./constants.js";
+import { fileURLToPath } from "node:url";
+import chalk from "chalk";
 
 const execFileAsync = promisify(execFile);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-export function getErrorMessage(error: unknown) {
+export async function getPackageJson() {
+  const packageJsonContent = await readFile(
+    join(__dirname, "../package.json"),
+    "utf8",
+  );
+  return JSON.parse(packageJsonContent);
+}
+
+function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
+}
+
+export function fail(context: string, error: unknown): never {
+  console.error(chalk.red(`${context}: ${getErrorMessage(error)}`));
+  process.exit(1);
 }
 
 export function getEditorInfo() {
@@ -61,16 +79,15 @@ export async function getFilePathByOS() {
   throw new Error(`Unsupported operating system: ${process.platform}`);
 }
 
-function isPdfOrDocxFile(file: string) {
-  const ext = extname(file).toLowerCase();
-  return ext === ".pdf" || ext === ".docx";
+export function isSupportedFile(filePath: string) {
+  return SUPPORTED_FILE_TYPES.includes(extname(filePath).toLowerCase());
 }
 
 export async function getDeviceFiles(...dirs: string[]) {
   const fileOptions: FileOption[] = [];
   for (const dir of dirs) {
     const dirFiles = await readdir(dir);
-    const pdfAndDocxFiles = dirFiles.filter((file) => isPdfOrDocxFile(file));
+    const pdfAndDocxFiles = dirFiles.filter((file) => isSupportedFile(file));
     const dirFileOptions: FileOption[] = pdfAndDocxFiles.map((file) => ({
       value: join(dir, file),
       label: file,
@@ -103,12 +120,23 @@ export async function setConfig(config: Config) {
   await writeFile(CONFIG_FILE, JSON.stringify(updatedConfig, null, 2), "utf8");
 }
 
-export async function getConfig() {
+export async function getConfig(): Promise<Config> {
   try {
     const content = await readFile(CONFIG_FILE, "utf8");
     return JSON.parse(content);
   } catch {
     // config doesn't exist yet, return empty config
     return {};
+  }
+}
+
+export const HISTORY_FILE = join(CONFIG_DIR, "history.json");
+
+export async function getHistory(): Promise<History> {
+  try {
+    const historyJson = await readFile(HISTORY_FILE, "utf8");
+    return JSON.parse(historyJson);
+  } catch (error) {
+    fail("Error reading history file", error);
   }
 }

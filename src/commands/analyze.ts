@@ -1,8 +1,9 @@
 import {
+  fail,
   getDeviceFiles,
   getEditorInfo,
-  getErrorMessage,
   getFilePathByOS,
+  isSupportedFile,
 } from "../helpers.js";
 import { autocomplete, cancel, intro, isCancel, select } from "@clack/prompts";
 import { editor } from "@inquirer/prompts";
@@ -10,6 +11,7 @@ import { homedir } from "node:os";
 import { toMarkdown } from "@firecrawl/anydoc";
 import chalk from "chalk";
 import { join } from "node:path";
+import { generateResumeAnalysis } from "../lib/generateResumeAnalysis.js";
 
 export async function analyzeResume() {
   intro(chalk.blueBright("Resume Analyzer 🤖\n"));
@@ -35,12 +37,15 @@ export async function analyzeResume() {
       const selectedFilePath = await getFilePathByOS();
       if (!selectedFilePath)
         throw new Error("No file selected — did you cancel the dialog?");
+      if (!isSupportedFile(selectedFilePath)) {
+        throw new Error(
+          "Only PDF and DOCX files are supported. Please select a valid file.",
+        );
+      }
       filePath = selectedFilePath;
       console.log(chalk.green(`Using: ${filePath}`));
     } catch (error) {
-      const errorMessage = getErrorMessage(error);
-      console.error(chalk.red(`Error selecting file: ${errorMessage}`));
-      process.exit(1);
+      fail("Error selecting file via nativeDialog", error);
     }
   } else if (fileSource === "scanFolders") {
     const desktopDir = join(homedir(), "Desktop");
@@ -67,9 +72,7 @@ export async function analyzeResume() {
       filePath = String(selectedFilePath);
       console.log(chalk.green(`Using: ${filePath}`));
     } catch (error) {
-      const errorMessage = getErrorMessage(error);
-      console.error(chalk.red(`Error selecting file: ${errorMessage}`));
-      process.exit(1);
+      fail("Error selecting file via scanFolders", error);
     }
   }
 
@@ -78,7 +81,7 @@ export async function analyzeResume() {
     process.exit(1);
   }
 
-  const resumeMarkdown = await toMarkdown(filePath);
+  let resumeMarkdown: string | null = null;
   let jobDescriptionText: string | null = null;
 
   try {
@@ -88,17 +91,26 @@ export async function analyzeResume() {
         `\nOpening ${chalk.cyan(editorName)}. Paste the job description, then ${saveHint}.`,
       ),
     );
+
     const jobDescription = await editor({
       message: "Paste the job description (opens your editor):",
       validate: (value) =>
         value.trim() !== "" || "Job description cannot be empty.",
     });
     jobDescriptionText = jobDescription.trim();
-    console.log(chalk.blueBright("\nJob Description:\n"));
-    console.log(chalk.white(jobDescriptionText));
+    resumeMarkdown = await toMarkdown(filePath);
   } catch (error) {
-    const errorMessage = getErrorMessage(error);
-    console.error(chalk.red(`Error getting job description: ${errorMessage}`));
-    process.exit(1);
+    fail("Error preparing resume and job description", error);
+  }
+
+  try {
+    const resumeAnalysisResult = await generateResumeAnalysis(
+      resumeMarkdown,
+      jobDescriptionText,
+    );
+    console.log(chalk.blueBright("\nResume Analysis Result:\n"));
+    // TODO: add chalk.table output here
+  } catch (error) {
+    fail("Error generating resume analysis", error);
   }
 }
