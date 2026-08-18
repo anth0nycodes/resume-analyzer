@@ -12,8 +12,9 @@ import { toMarkdown } from "@firecrawl/anydoc";
 import chalk from "chalk";
 import { join } from "node:path";
 import { generateResumeAnalysis } from "../lib/generateResumeAnalysis.js";
+import { renderAnalysis } from "../lib/renderAnalysis.js";
 
-export async function analyzeResume() {
+export async function analyze() {
   intro(chalk.blueBright("Resume Analyzer 🤖\n"));
 
   let filePath: string | null = null;
@@ -109,7 +110,7 @@ export async function analyzeResume() {
       jobDescriptionText,
     );
     console.log(chalk.blueBright("\nResume Analysis Result:\n"));
-    // TODO: add chalk.table output here
+    renderAnalysis(resumeAnalysisResult);
   } catch (error) {
     fail("Error generating resume analysis", error);
   }

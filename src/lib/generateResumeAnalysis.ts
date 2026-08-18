@@ -29,7 +29,13 @@ Rules:
 - Every point must be relevant to THIS role. Drop generic advice and generic praise.
 - Keywords must be real skills/tools/technologies from the JD that are genuinely relevant to the role and absent from the resume — no soft-skill filler, nothing unrelated.
 - Be specific and evidence-based; quote resume/JD wording when it sharpens the point.
-- Keep each item to one short, standalone sentence. Respect the field limits — fewer, sharper points beat long lists. Return an empty array if none apply.`;
+- Keep each item to one short, standalone sentence. Respect the field limits — fewer, sharper points beat long lists. Return an empty array if none apply.
+
+Input check (do this first — judge each input INDEPENDENTLY):
+- Resume: a resume describes ONE person's work history — contact line, roles, dates, bullet accomplishments. It is NOT a handbook, manual, policy doc, guide, article, job posting, or any other document. Length does not make it a resume; a long document that isn't one person's work history means inputCheck.resumeUsable is false. Also set false if it is empty, garbled, or the wrong document type. The resume is converted to Markdown for structure — judge its content, not the formatting; Markdown syntax is never a reason to mark it unusable or to lower the analysis.
+- Job description: set inputCheck.jobDescriptionUsable false if it is missing, too short, or not a real posting.
+- Set each flag true ONLY if that input passes its own test. Never let one input's verdict carry the other — a bad JD does not excuse skipping the resume check, and vice versa.
+- If ANY flag is false, set inputCheck.note to name EVERY unusable input and what to re-upload for each, then return empty arrays for all results. Never fabricate analysis from unusable input.`;
 
   const prompt = `Resume:
 ${resumeMarkdown}

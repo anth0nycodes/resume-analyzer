@@ -1,6 +1,24 @@
 import { z } from "zod";
 
 export const ResumeAnalysisSchema = z.object({
+  inputCheck: z.object({
+    resumeUsable: z
+      .boolean()
+      .describe(
+        "false if the resume is empty, garbled, too sparse, or not actually a resume (e.g. a handbook, manual, guide, policy doc, or article rather than one person's work history) — length alone does not make it a resume. Otherwise true.",
+      ),
+    jobDescriptionUsable: z
+      .boolean()
+      .describe(
+        "false if the job description is missing, too short, or not an actual job posting — otherwise true.",
+      ),
+    note: z
+      .string()
+      .max(300)
+      .describe(
+        "If either input is unusable, plain-language text naming EVERY unusable input and what to re-upload or paste for each. Empty string when both inputs are usable.",
+      ),
+  }),
   results: z.object({
     strengths: z
       .array(z.string().max(240))
