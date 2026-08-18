@@ -1,5 +1,6 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { spinner } from "@clack/prompts";
+import chalk from "chalk";
 import { generateText, Output } from "ai";
 import { z } from "zod";
 import {
@@ -53,7 +54,7 @@ ${jobDescription}`;
 
     if (!apiKey) {
       console.error(
-        "API key is not set. Please set it using the 'set-api-key' command.",
+        `You must set your API key in order to run an analysis. You can set your API key with ${chalk.cyan("resume-analyzer config --sak <api-key>")} / ${chalk.cyan("resume-analyzer config --set-api-key <api-key>")}.`,
       );
       process.exit(1);
     }
