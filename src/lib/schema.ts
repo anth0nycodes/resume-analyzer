@@ -10,7 +10,7 @@ export const ResumeAnalysisSchema = z.object({
     jobDescriptionUsable: z
       .boolean()
       .describe(
-        "false if the job description is missing, too short, or not an actual job posting — otherwise true.",
+        "false if the job description is empty, too short, or not an actual job posting (e.g. a PR description, changelog, README, docs, or article rather than a role with responsibilities and requirements) — otherwise true.",
       ),
     note: z
       .string()
