@@ -1,7 +1,7 @@
 import { program } from "commander";
 import { fail, getPackageJson } from "./helpers.js";
 import chalk from "chalk";
-import { analyzeResume } from "./commands/analyze.js";
+import { analyze } from "./commands/analyze.js";
 import { printProjectInfo } from "./messages/projectInfo.js";
 import { config } from "./commands/config.js";
 
@@ -18,7 +18,7 @@ async function main() {
     .description(
       `Analyze a resume file. Note: only ${chalk.yellow("PDF")} and ${chalk.yellow("DOCX")} files are supported.`,
     )
-    .action(async () => await analyzeResume());
+    .action(async () => await analyze());
 
   program
     .command("config")

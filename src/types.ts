@@ -25,6 +25,12 @@ export interface Config {
 }
 
 // History
+type InputCheck = {
+  resumeUsable: boolean;
+  jobDescriptionUsable: boolean;
+  note: string;
+};
+
 type HistoryResult = {
   strengths: string[];
   suggestions: string[];
@@ -34,6 +40,7 @@ type HistoryResult = {
 
 type HistoryRun = {
   id: number;
+  inputCheck: InputCheck;
   results: HistoryResult;
 };
 
