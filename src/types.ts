@@ -25,7 +25,7 @@ export interface Config {
 }
 
 // History
-export type InputCheck = {
+type InputCheck = {
   resumeUsable: boolean;
   jobDescriptionUsable: boolean;
   note: string;
