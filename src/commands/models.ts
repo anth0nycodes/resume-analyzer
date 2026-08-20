@@ -43,16 +43,18 @@ export async function models(options: ModelsOptions) {
     }
   }
 
+  const modelOptions = AVAILABLE_MODELS.map(({ value, label, hint }) => ({
+    value,
+    label:
+      value === currentModel ? `${label} ${chalk.dim("(current)")}` : label,
+    hint,
+  }));
+
   // No option passed — pick a model interactively.
   const selectedModel = await select({
     message: "Select the default model for your analyses",
     initialValue: currentModel,
-    options: AVAILABLE_MODELS.map(({ value, label, hint }) => ({
-      value,
-      label:
-        value === currentModel ? `${label} ${chalk.dim("(current)")}` : label,
-      hint,
-    })),
+    options: modelOptions,
   });
 
   if (isCancel(selectedModel)) {
