@@ -75,7 +75,12 @@ export async function history(runId?: string) {
     process.exit();
   }
 
-  const historyRunOptions = historyRuns.map((run) => {
+  // Latest first. Dates are day-granular, so same-day runs fall back to id
+  // (which increments per run) to keep the newest on top.
+  const sortedRuns = [...historyRuns].sort(
+    (a, b) => Date.parse(b.date) - Date.parse(a.date) || b.id - a.id,
+  );
+  const historyRunOptions = sortedRuns.map((run) => {
     const { resumeUsable, jobDescriptionUsable } = run.inputCheck;
     return {
       value: run.id,
