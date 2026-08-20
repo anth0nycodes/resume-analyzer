@@ -2,6 +2,8 @@
 
 An AI-powered CLI that analyzes your resume against a job description and scores how well they match.
 
+![demo](./assets/demo.gif)
+
 <p align="center">
   <img alt="GitHub Stars" src="https://img.shields.io/github/stars/anth0nycodes/resume-analyzer?style=plastic">
   <img alt="NPM Downloads" src="https://img.shields.io/npm/d18m/%40anth0nycodes%2Fresume-analyzer?style=plastic">
