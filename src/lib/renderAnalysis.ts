@@ -100,7 +100,8 @@ function renderScore(score: number) {
   const { color, label } = scoreVerdict(rounded);
   const barWidth = 20;
   const filled = Math.round((rounded / 100) * barWidth);
-  const bar = color("█".repeat(filled)) + chalk.dim("░".repeat(barWidth - filled));
+  const unfilled = barWidth - filled;
+  const bar = color("█".repeat(filled)) + chalk.dim("░".repeat(unfilled));
 
   console.log(
     `🎯  ${chalk.bold("Overall Score")}  ${color.bold(`${rounded}/100`)}  ${bar}  ${chalk.dim(label)}`,
