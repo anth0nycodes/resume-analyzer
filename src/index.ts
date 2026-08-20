@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { program } from "commander";
 import { fail, getPackageJson } from "./helpers.js";
 import chalk from "chalk";
