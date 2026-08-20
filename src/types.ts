@@ -25,10 +25,6 @@ export interface Config {
 }
 
 // History
-export interface HistoryOptions {
-  id: string;
-}
-
 type InputCheck = {
   resumeUsable: boolean;
   jobDescriptionUsable: boolean;

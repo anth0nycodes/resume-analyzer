@@ -24,10 +24,7 @@ async function main() {
   program
     .command("history")
     .description("View your analysis history")
-    .option(
-      "-i, --id <run-id>",
-      "The ID of the specific run to view details for",
-    )
+    .argument("[run-id]", "ID of a specific run to view details for")
     .action(history);
 
   program
