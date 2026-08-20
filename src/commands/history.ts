@@ -1,5 +1,5 @@
 import { HistoryRun } from "../types.js";
-import { getHistory } from "../helpers.js";
+import { fileExists, getHistory, HISTORY_FILE } from "../helpers.js";
 import chalk from "chalk";
 import { isCancel, cancel, select } from "@clack/prompts";
 import { renderAnalysis, wrap } from "../lib/renderAnalysis.js";
@@ -33,6 +33,12 @@ function renderRunDetails(run: HistoryRun) {
 }
 
 export async function history(runId?: string) {
+  if (!(await fileExists(HISTORY_FILE))) {
+    console.log(
+      `${chalk.yellow("No analyses yet.")} Run ${chalk.cyan("resume-analyzer analyze")} to create your first one.`,
+    );
+    process.exit();
+  }
   const historyJSON = await getHistory();
   const historyRuns = historyJSON.runs || [];
   if (historyRuns.length === 0) {
