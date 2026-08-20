@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { PackageInfo } from "../types";
 
 export function printProjectInfo(packageJson: PackageInfo) {
-  console.log(chalk.bold.blueBright(`\n${packageJson.name} 🤖`));
+  console.log(chalk.bold.blueBright("\nResume Analyzer 🤖"));
   console.log(chalk.gray(`${packageJson.description}\n`));
   console.log(`${chalk.bold("Author:")}    ${chalk.cyan(packageJson.author)}`);
   console.log(
