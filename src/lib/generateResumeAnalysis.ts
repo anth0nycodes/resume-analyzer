@@ -82,7 +82,8 @@ ${jobDescription}`;
       history.runs.length > 0
         ? history.runs[history.runs.length - 1].id + 1
         : 1;
-    const historyRun = { id: historyRunId, ...parsedOutput };
+    const currentDate = new Date().toISOString().split("T")[0];
+    const historyRun = { id: historyRunId, date: currentDate, ...parsedOutput };
     history.runs.push(historyRun);
     await writeFile(
       HISTORY_FILE,

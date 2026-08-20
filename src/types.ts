@@ -38,8 +38,11 @@ type HistoryResult = {
   missingKeywords: string[];
 };
 
-type HistoryRun = {
+export type HistoryRun = {
   id: number;
+  date: string;
+  role: string;
+  company: string;
   inputCheck: InputCheck;
   results: HistoryResult;
 };

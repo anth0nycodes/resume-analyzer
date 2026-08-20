@@ -4,6 +4,7 @@ import chalk from "chalk";
 import { analyze } from "./commands/analyze.js";
 import { printProjectInfo } from "./messages/projectInfo.js";
 import { config } from "./commands/config.js";
+import { history } from "./commands/history.js";
 
 const packageJson = await getPackageJson();
 
@@ -18,7 +19,13 @@ async function main() {
     .description(
       `Analyze a resume file. Note: only ${chalk.yellow("PDF")} and ${chalk.yellow("DOCX")} files are supported.`,
     )
-    .action(async () => await analyze());
+    .action(analyze);
+
+  program
+    .command("history")
+    .description("View your analysis history")
+    .argument("[run-id]", "ID of a specific run to view details for")
+    .action(history);
 
   program
     .command("config")
@@ -34,7 +41,7 @@ async function main() {
     return;
   }
 
-  program.parseAsync();
+  await program.parseAsync();
 }
 
 try {

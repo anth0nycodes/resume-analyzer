@@ -11,7 +11,7 @@ function termWidth() {
 }
 
 // Greedy word-wrap. `indent` pads every line; `hang` extra-pads continuations.
-function wrap(text: string, indent: number, hang: number) {
+export function wrap(text: string, indent: number, hang: number) {
   const width = termWidth();
   const words = text.split(/\s+/);
   const lines: string[] = [];

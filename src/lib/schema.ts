@@ -1,6 +1,18 @@
 import { z } from "zod";
 
 export const ResumeAnalysisSchema = z.object({
+  role: z
+    .string()
+    .max(100)
+    .describe(
+      "The job title or role being applied for. Empty string if unable to be inferred.",
+    ),
+  company: z
+    .string()
+    .max(100)
+    .describe(
+      "The company name from the job description. Empty string if unable to be inferred.",
+    ),
   inputCheck: z.object({
     resumeUsable: z
       .boolean()
