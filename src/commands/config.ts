@@ -10,7 +10,7 @@ import {
 } from "../helpers.js";
 import chalk from "chalk";
 
-export async function config(options: ConfigOptions, program: Command) {
+export async function config(options: ConfigOptions, command: Command) {
   if (options.apiKeyInfo) {
     printApiKeyInfo();
     return;
@@ -69,5 +69,5 @@ export async function config(options: ConfigOptions, program: Command) {
   }
 
   // No option passed — show config command help.
-  program.help();
+  command.help();
 }
