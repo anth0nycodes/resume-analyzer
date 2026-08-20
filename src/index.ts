@@ -27,6 +27,8 @@ async function main() {
     .argument("[run-id]", "ID of a specific run to view details for")
     .action(history);
 
+  // TODO: add model selection command
+
   program
     .command("config")
     .description("Manage your Resume Analyzer configuration")

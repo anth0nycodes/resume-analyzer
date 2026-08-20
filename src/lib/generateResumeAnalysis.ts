@@ -16,6 +16,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 export async function generateResumeAnalysis(
   resumeMarkdown: string,
   jobDescription: string,
+  filePath: string,
 ) {
   const SYSTEM_PROMPT = `You are a senior hiring manager and technical recruiter reviewing a resume against a specific job description.
 
@@ -83,7 +84,12 @@ ${jobDescription}`;
         ? history.runs[history.runs.length - 1].id + 1
         : 1;
     const currentDate = new Date().toISOString().split("T")[0];
-    const historyRun = { id: historyRunId, date: currentDate, ...parsedOutput };
+    const historyRun = {
+      id: historyRunId,
+      filePath: filePath,
+      date: currentDate,
+      ...parsedOutput,
+    };
     history.runs.push(historyRun);
     await writeFile(
       HISTORY_FILE,
