@@ -5,7 +5,11 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { homedir } from "node:os";
 import constants from "node:constants";
-import { SUPPORTED_FILE_TYPES } from "./constants.js";
+import {
+  AVAILABLE_MODELS,
+  DEFAULT_MODEL,
+  SUPPORTED_FILE_TYPES,
+} from "./constants.js";
 import { fileURLToPath } from "node:url";
 import chalk from "chalk";
 
@@ -128,6 +132,19 @@ export async function getConfig(): Promise<Config> {
     // config doesn't exist yet, return empty config
     return {};
   }
+}
+
+export function isSupportedModel(model: string) {
+  return AVAILABLE_MODELS.some(
+    (availableModel) => availableModel.value === model,
+  );
+}
+
+// Falls back to the default when nothing is set, or when a config was hand-edited
+// to a model this CLI no longer ships.
+export async function getModel() {
+  const { model } = await getConfig();
+  return model && isSupportedModel(model) ? model : DEFAULT_MODEL;
 }
 
 export const HISTORY_FILE = join(CONFIG_DIR, "history.json");

@@ -8,6 +8,7 @@ import {
   fileExists,
   getConfig,
   getHistory,
+  getModel,
   HISTORY_FILE,
 } from "../helpers.js";
 import { ResumeAnalysisSchema } from "./schema.js";
@@ -67,9 +68,13 @@ ${jobDescription}`;
       apiKey: apiKey,
     });
 
-    loader.start("Analyzing your resume against the job description...");
+    const model = await getModel();
+
+    loader.start(
+      `Analyzing your resume against the job description with ${model}...`,
+    );
     const { text } = await generateText({
-      model: openai("gpt-5.4-mini"),
+      model: openai(model),
       output: Output.object({
         schema: ResumeAnalysisSchema,
       }),

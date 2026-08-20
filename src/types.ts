@@ -22,6 +22,14 @@ export interface ConfigOptions {
 
 export interface Config {
   apiKey?: string;
+  model?: string;
+}
+
+// Models
+export interface ModelsOptions {
+  listModels?: boolean;
+  setModel?: string;
+  resetModel?: boolean;
 }
 
 // History
