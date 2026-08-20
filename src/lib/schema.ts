@@ -32,6 +32,13 @@ export const ResumeAnalysisSchema = z.object({
       ),
   }),
   results: z.object({
+    score: z
+      .number()
+      .min(0)
+      .max(100)
+      .describe(
+        "Overall score (0-100) for how well the resume matches the job description.",
+      ),
     strengths: z
       .array(z.string().max(240))
       .max(5)

@@ -2,10 +2,22 @@ import { HistoryRun } from "../types.js";
 import { fileExists, getHistory, HISTORY_FILE } from "../helpers.js";
 import chalk from "chalk";
 import { isCancel, cancel, select } from "@clack/prompts";
+import { basename } from "node:path";
 import { renderAnalysis, wrap } from "../lib/renderAnalysis.js";
 
-function getHistoryRunLabel(run: HistoryRun) {
+// Same thresholds as the score bar in renderAnalysis.
+function scoreTag(score: number) {
+  const rounded = Math.round(score);
+  const color =
+    rounded >= 80 ? chalk.green : rounded >= 60 ? chalk.yellow : chalk.red;
+  return color(`${rounded}/100`);
+}
+
+// `summary` adds file + score for the picker list; the detail view leaves both
+// to renderAnalysis so they aren't printed twice.
+function getHistoryRunLabel(run: HistoryRun, summary = true) {
   const { resumeUsable, jobDescriptionUsable } = run.inputCheck;
+  const file = run.filePath ? `${basename(run.filePath)} • ` : "";
   if (!resumeUsable || !jobDescriptionUsable) {
     const unusable = [
       !resumeUsable && "resume",
@@ -13,14 +25,15 @@ function getHistoryRunLabel(run: HistoryRun) {
     ]
       .filter(Boolean)
       .join(" and ");
-    return `${chalk.dim(`${run.id}. Skipped — unusable ${unusable} • [${run.date}]`)}`;
+    return `${chalk.dim(`${run.id}. Skipped — unusable ${unusable} • ${file}[${run.date}]`)}`;
   }
-  return `${run.id}. ${run.role} ${run.company.length > 0 ? `at ${run.company} •` : "•"} [${run.date}]`;
+  const parts = summary ? `${file}${scoreTag(run.results.score)} • ` : "";
+  return `${run.id}. ${run.role} ${run.company.length > 0 ? `at ${run.company} •` : "•"} ${parts}[${run.date}]`;
 }
 
 function renderRunDetails(run: HistoryRun) {
   const { resumeUsable, jobDescriptionUsable, note } = run.inputCheck;
-  console.log(getHistoryRunLabel(run));
+  console.log(getHistoryRunLabel(run, false));
 
   if (!resumeUsable || !jobDescriptionUsable) {
     console.log(wrap(note, 2, 0));

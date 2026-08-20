@@ -108,6 +108,7 @@ export async function analyze() {
     const resumeAnalysisResult = await generateResumeAnalysis(
       resumeMarkdown,
       jobDescriptionText,
+      filePath,
     );
     console.log(chalk.blueBright("\nResume Analysis Result:\n"));
     renderAnalysis(resumeAnalysisResult);

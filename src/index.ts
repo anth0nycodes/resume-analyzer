@@ -5,6 +5,7 @@ import { analyze } from "./commands/analyze.js";
 import { printProjectInfo } from "./messages/projectInfo.js";
 import { config } from "./commands/config.js";
 import { history } from "./commands/history.js";
+import { models } from "./commands/models.js";
 
 const packageJson = await getPackageJson();
 
@@ -26,6 +27,16 @@ async function main() {
     .description("View your analysis history")
     .argument("[run-id]", "ID of a specific run to view details for")
     .action(history);
+
+  program
+    .command("models")
+    .description(
+      "Choose the default OpenAI model used for analyses (interactive when no option is passed)",
+    )
+    .option("--lm, --list-models", "list the supported models")
+    .option("--sm, --set-model <model>", "set your default model")
+    .option("--rm, --reset-model", "reset your default model")
+    .action(models);
 
   program
     .command("config")

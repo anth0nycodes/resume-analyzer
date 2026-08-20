@@ -22,6 +22,14 @@ export interface ConfigOptions {
 
 export interface Config {
   apiKey?: string;
+  model?: string;
+}
+
+// Models
+export interface ModelsOptions {
+  listModels?: boolean;
+  setModel?: string;
+  resetModel?: boolean;
 }
 
 // History
@@ -32,6 +40,7 @@ type InputCheck = {
 };
 
 type HistoryResult = {
+  score: number;
   strengths: string[];
   suggestions: string[];
   gaps: string[];
@@ -40,6 +49,7 @@ type HistoryResult = {
 
 export type HistoryRun = {
   id: number;
+  filePath: string;
   date: string;
   role: string;
   company: string;

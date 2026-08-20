@@ -8,6 +8,7 @@ import {
   fileExists,
   getConfig,
   getHistory,
+  getModel,
   HISTORY_FILE,
 } from "../helpers.js";
 import { ResumeAnalysisSchema } from "./schema.js";
@@ -16,6 +17,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 export async function generateResumeAnalysis(
   resumeMarkdown: string,
   jobDescription: string,
+  filePath: string,
 ) {
   const SYSTEM_PROMPT = `You are a senior hiring manager and technical recruiter reviewing a resume against a specific job description.
 
@@ -52,8 +54,7 @@ ${jobDescription}`;
     }
 
     const history = await getHistory();
-    const config = await getConfig();
-    const apiKey = config.apiKey;
+    const { apiKey } = await getConfig();
 
     if (!apiKey) {
       console.error(
@@ -66,9 +67,13 @@ ${jobDescription}`;
       apiKey: apiKey,
     });
 
-    loader.start("Analyzing your resume against the job description...");
+    const model = await getModel();
+
+    loader.start(
+      `Analyzing your resume against the job description with ${model}...`,
+    );
     const { text } = await generateText({
-      model: openai("gpt-5.4-mini"),
+      model: openai(model),
       output: Output.object({
         schema: ResumeAnalysisSchema,
       }),
@@ -83,7 +88,12 @@ ${jobDescription}`;
         ? history.runs[history.runs.length - 1].id + 1
         : 1;
     const currentDate = new Date().toISOString().split("T")[0];
-    const historyRun = { id: historyRunId, date: currentDate, ...parsedOutput };
+    const historyRun = {
+      id: historyRunId,
+      filePath: filePath,
+      date: currentDate,
+      ...parsedOutput,
+    };
     history.runs.push(historyRun);
     await writeFile(
       HISTORY_FILE,

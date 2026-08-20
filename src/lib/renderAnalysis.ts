@@ -1,8 +1,12 @@
 import chalk from "chalk";
+import { basename } from "node:path";
 import type { z } from "zod";
 import type { ResumeAnalysisSchema } from "./schema.js";
 
-type ResumeAnalysis = z.infer<typeof ResumeAnalysisSchema>;
+// filePath is stored per history run, not returned by the model.
+type ResumeAnalysis = z.infer<typeof ResumeAnalysisSchema> & {
+  filePath?: string;
+};
 
 // Clamp to a readable measure; reflow to the terminal when it's narrower.
 function termWidth() {
@@ -79,6 +83,32 @@ function keywordChips(keywords: string[]) {
   console.log();
 }
 
+function renderFileName(filePath?: string) {
+  if (!filePath) return;
+  console.log(`📄  ${chalk.bold(basename(filePath))}`);
+}
+
+// Bucket the score so the number carries a verdict, not just a color.
+function scoreVerdict(score: number) {
+  if (score >= 80) return { color: chalk.green, label: "Strong match" };
+  if (score >= 60) return { color: chalk.yellow, label: "Partial match" };
+  return { color: chalk.red, label: "Weak match" };
+}
+
+function renderScore(score: number) {
+  const rounded = Math.round(score);
+  const { color, label } = scoreVerdict(rounded);
+  const barWidth = 20;
+  const filled = Math.round((rounded / 100) * barWidth);
+  const unfilled = barWidth - filled;
+  const bar = color("█".repeat(filled)) + chalk.dim("░".repeat(unfilled));
+
+  console.log(
+    `🎯  ${chalk.bold("Overall Score")}  ${color.bold(`${rounded}/100`)}  ${bar}  ${chalk.dim(label)}`,
+  );
+  console.log();
+}
+
 function renderInputWarning(inputCheck: ResumeAnalysis["inputCheck"]) {
   const problems: string[] = [];
   if (!inputCheck.resumeUsable) problems.push("resume");
@@ -95,13 +125,16 @@ function renderInputWarning(inputCheck: ResumeAnalysis["inputCheck"]) {
 }
 
 export function renderAnalysis(analysis: ResumeAnalysis) {
-  const { inputCheck, results } = analysis;
+  const { inputCheck, results, filePath } = analysis;
 
   if (!inputCheck.resumeUsable || !inputCheck.jobDescriptionUsable) {
+    renderFileName(filePath);
     renderInputWarning(inputCheck);
     return;
   }
 
+  renderFileName(filePath);
+  renderScore(results.score);
   section(
     chalk.green.bold("✅  Strengths"),
     results.strengths,
