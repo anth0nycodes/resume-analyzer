@@ -30,7 +30,7 @@ export async function config(options: ConfigOptions, command: Command) {
   if (options.showConfig) {
     if (!(await fileExists(CONFIG_FILE))) {
       console.log(
-        `${chalk.yellow("No config file found.")} No config to display. You can create a config by setting your API key with ${chalk.cyan("resume-analyzer config --sak <api-key>")} / ${chalk.cyan("resume-analyzer config --set-api-key <api-key>")}.`,
+        `${chalk.yellow("No config file found.")} No config to display. You can create a config by setting your API key with ${chalk.cyan("resume-analyzer config --sak <api-key>")} / ${chalk.cyan("resume-analyzer config --set-api-key <api-key>")}, or your default model with ${chalk.cyan("resume-analyzer models --sm <model>")} / ${chalk.cyan("resume-analyzer models --set-model <model>")}.`,
       );
       process.exit();
     }
@@ -41,7 +41,7 @@ export async function config(options: ConfigOptions, command: Command) {
       const isConfigEmpty = Object.keys(config).length === 0;
       if (isConfigEmpty) {
         console.log(
-          `\n${chalk.yellow("Note:")} Your config file is empty. You can set your API key with ${chalk.cyan("resume-analyzer config --sak <api-key>")} / ${chalk.cyan("resume-analyzer config --set-api-key <api-key>")}.`,
+          `\n${chalk.yellow("Note:")} Your config file is empty. You can set your API key with ${chalk.cyan("resume-analyzer config --sak <api-key>")} / ${chalk.cyan("resume-analyzer config --set-api-key <api-key>")}, and your default model with ${chalk.cyan("resume-analyzer models --sm <model>")} / ${chalk.cyan("resume-analyzer models --set-model <model>")}.`,
         );
       }
       console.log(`${chalk.yellow("Your current config:\n")}${configString}`);
@@ -54,7 +54,7 @@ export async function config(options: ConfigOptions, command: Command) {
   if (options.resetConfig) {
     if (!(await fileExists(CONFIG_FILE))) {
       console.log(
-        `${chalk.yellow("No config file found.")} Nothing to reset. You can create a config by setting your API key with ${chalk.cyan("resume-analyzer config --sak <api-key>")} / ${chalk.cyan("resume-analyzer config --set-api-key <api-key>")}.`,
+        `${chalk.yellow("No config file found.")} Nothing to reset. You can create a config by setting your API key with ${chalk.cyan("resume-analyzer config --sak <api-key>")} / ${chalk.cyan("resume-analyzer config --set-api-key <api-key>")}, or your default model with ${chalk.cyan("resume-analyzer models --sm <model>")} / ${chalk.cyan("resume-analyzer models --set-model <model>")}.`,
       );
       process.exit();
     }

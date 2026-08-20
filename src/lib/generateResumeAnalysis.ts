@@ -54,8 +54,7 @@ ${jobDescription}`;
     }
 
     const history = await getHistory();
-    const config = await getConfig();
-    const apiKey = config.apiKey;
+    const { apiKey } = await getConfig();
 
     if (!apiKey) {
       console.error(
