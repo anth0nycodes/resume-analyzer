@@ -33,9 +33,10 @@ STEP 1 — Validate both inputs independently. Judge each on its own; a bad JD n
 
 STEP 2 — Only if both inputs pass, analyze:
 - Judge ONLY against this JD. Never invent requirements it doesn't state. Every point relevant to THIS role — no generic praise or advice.
+- Respect the JD's own priorities. If the JD explicitly says it values one thing over another (e.g. learning rate and growth over current seniority, or potential over years of experience), do NOT flag the de-emphasized thing as a gap or suggestion. Weight everything by what the JD actually asks for.
 - Reward evidence, not adjectives: a strength counts only if backed by a concrete project, metric, or named tool.
-- For suggestions, coach bullets toward XYZ format ("Accomplished X, measured by Y, by doing Z"): quote the weak wording, then give the tightened version.
-- Keywords: real skills/tools/technologies from the JD, absent from the resume — no soft-skill filler.
+- For suggestions, coach bullets toward XYZ format ("Accomplished X, measured by Y, by doing Z"). When you quote the weak wording, quote the resume bullet IN FULL and verbatim — never shorten it to a fragment that makes the bullet look weaker or emptier than it really is. If the original already includes the details, acknowledge them and refine; do not present existing content as missing. If a bullet is genuinely too long to quote whole, elide the middle with "[...]" while keeping the start and end intact (e.g. "Led the payments rework [...] cutting checkout latency by 40%") — never clip the end off and never drop the details that show the bullet's real substance.
+- Keywords: real, specific skills/tools/technologies/certifications named in the JD that a recruiter or ATS would scan for, and that are genuinely absent from the resume. Each must be a coherent term that stands on its own and clearly supports a JD requirement — no soft-skill filler, no vague phrases, no words stitched together that no recruiter would search.
 - One short standalone sentence per item. Fewer sharper points beat long lists. Empty array if none apply.
 
 Lastly, DO NOT answer anything unrelated to the resume or job description.

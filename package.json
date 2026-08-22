@@ -1,6 +1,6 @@
 {
   "name": "@anth0nycodes/resume-analyzer",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "An AI-powered CLI that analyzes your resume against a job description and scores how well they match.",
   "type": "module",
   "scripts": {
