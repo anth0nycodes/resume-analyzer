@@ -41,7 +41,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^4.0.42",
     "@clack/prompts": "^1.7.0",
-    "@firecrawl/anydoc": "^0.1.9",
+    "@firecrawl/anydoc": "^0.2.3",
     "@inquirer/prompts": "^8.5.2",
     "ai": "^7.0.66",
     "chalk": "^6.0.0",
